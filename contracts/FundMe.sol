@@ -1,16 +1,19 @@
 //SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.5;
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "./PriceConverter.sol";
 
-error NotOwner();
+error FundMe__NotOwner();
 
 contract FundMe {
     using PriceConverter for uint256;
     address public immutable i_owner;
+    AggregatorV3Interface public priceFeed;
 
-    constructor() {
+    constructor(address priceFeedAddress) {
         i_owner = msg.sender;
+        priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
     modifier onlyOwner() {
@@ -19,7 +22,7 @@ contract FundMe {
         //     "Only owner is allowed to call this function"
         // );
         if (msg.sender != i_owner) {
-            revert NotOwner();
+            revert FundMe__NotOwner();
         }
         _;
     }
@@ -31,7 +34,7 @@ contract FundMe {
     // function for sending funds
     function fund() public payable {
         require(
-            msg.value.getConversionRate() > MINIMUM_USD,
+            msg.value.getConversionRate(priceFeed) > MINIMUM_USD,
             "Didn't send enough!"
         );
         funders.push(msg.sender);
