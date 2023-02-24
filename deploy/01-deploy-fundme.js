@@ -5,12 +5,7 @@ const {
 } = require("../helper-hardhat-config");
 const { verify } = require("../utils/verify");
 
-module.exports = async ({
-    getNamedAccounts,
-    deployments,
-    getChainId,
-    getUnnamedAccounts,
-}) => {
+module.exports = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log, get } = deployments;
     const { deployer } = await getNamedAccounts();
     const chainId = network.config.chainId;
@@ -28,16 +23,15 @@ module.exports = async ({
         from: deployer,
         args: args, // Add priceFeed address here
         log: true,
-        waitConfirmations: 6,
+        waitConfirmations: 1,
     });
     log("----------------------------");
     log("Fundme deployed successfully");
     log("----------------------------");
 
     if (
-        !developmentChains.includes(
-            network.name && process.env.ETHERSCAN_API_KEY
-        )
+        !developmentChains.includes(network.name) &&
+        process.env.ETHERSCAN_API_KEY
     ) {
         await verify(fundMe.address, args);
     }
