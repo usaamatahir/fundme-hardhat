@@ -117,12 +117,21 @@ describe("FundMe", async function () {
 
             await expect(fundMe.funders(0)).to.be.reverted;
 
-            // for (let i = 1; i < 6; i++) {
-            //     assert.equal(
-            //         await fundMe.amountFundedByFunder(accounts[i].address),
-            //         0
-            //     );
-            // }
+            for (let i = 1; i < 6; i++) {
+                assert.equal(
+                    await fundMe.amountFundedByFunder(accounts[i].address),
+                    0
+                );
+            }
+        });
+
+        it("only owner can withdraw funds", async () => {
+            const accounts = await ethers.getSigners();
+            const attacker = accounts[1];
+            const attackerConnectedContract = await fundMe.connect(attacker);
+            await expect(
+                attackerConnectedContract.withdraw()
+            ).to.be.revertedWith("FundMe__NotOwner");
         });
     });
 });

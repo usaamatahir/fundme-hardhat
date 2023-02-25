@@ -44,8 +44,16 @@ contract FundMe {
     }
 
     function withdraw() public onlyOwner {
-        funders = new address[](0);
+        for (
+            uint256 funderIndex = 0;
+            funderIndex < funders.length;
+            funderIndex++
+        ) {
+            address funder = funders[funderIndex];
+            amountFundedByFunder[funder] = 0;
+        }
 
+        funders = new address[](0);
         (bool success, ) = payable(msg.sender).call{
             value: address(this).balance
         }("");
