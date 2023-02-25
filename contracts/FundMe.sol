@@ -8,8 +8,12 @@ error FundMe__NotOwner();
 
 contract FundMe {
     using PriceConverter for uint256;
-    address public immutable i_owner;
     AggregatorV3Interface public priceFeed;
+    address[] public funders;
+    mapping(address => uint256) public amountFundedByFunder;
+
+    uint256 public constant MINIMUM_USD = 50 * 1e18;
+    address public immutable i_owner;
 
     constructor(address priceFeedAddress) {
         i_owner = msg.sender;
@@ -26,10 +30,6 @@ contract FundMe {
         }
         _;
     }
-
-    uint256 public constant MINIMUM_USD = 50 * 1e18;
-    address[] public funders;
-    mapping(address => uint256) public amountFundedByFunder;
 
     // function for sending funds
     function fund() public payable {
