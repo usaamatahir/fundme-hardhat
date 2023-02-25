@@ -1,14 +1,17 @@
-const { network } = require("hardhat");
-const {
-    networkConfig,
-    developmentChains,
-} = require("../helper-hardhat-config");
-const { verify } = require("../utils/verify");
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { DeployFunction } from "hardhat-deploy/types";
 
-module.exports = async ({ getNamedAccounts, deployments }) => {
+import { network } from "hardhat";
+import { developmentChains, networkConfig } from "../helper-hardhat-config";
+import { verify } from "../utils/verify";
+
+const deployFundMe: DeployFunction = async function ({
+    deployments,
+    getNamedAccounts,
+}: HardhatRuntimeEnvironment) {
     const { deploy, log, get } = deployments;
     const { deployer } = await getNamedAccounts();
-    const chainId = network.config.chainId;
+    const chainId = network.config.chainId as number;
 
     let ethUsdPriceFeedAddress;
 
@@ -37,4 +40,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     }
 };
 
-module.exports.tags = ["all", "fundme"];
+export default deployFundMe;
+deployFundMe.tags = ["all", "fundme"];
+
+// module.exports.tags = ["all", "fundme"];
